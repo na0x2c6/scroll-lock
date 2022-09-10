@@ -575,18 +575,26 @@ var scroll_lock_fillGapTarget = function fillGapTarget($target) {
       scroll_lock_unfillGapTarget($target);
     }
 
+    var method = $target.getAttribute('data-scroll-lock-fill-gap-method') || state.fillGapMethod;
+
+    if (FILL_GAP_AVAILABLE_METHODS.indexOf(method) < 0) {
+      var methods = FILL_GAP_AVAILABLE_METHODS.join(', ');
+      throwError("\"".concat(method, "\" method is not available!\nAvailable fill gap methods: ").concat(methods, "."));
+      return;
+    }
+
     var computedStyle = window.getComputedStyle($target);
     $target.setAttribute('data-scroll-lock-filled-gap', 'true');
-    $target.setAttribute('data-scroll-lock-current-fill-gap-method', state.fillGapMethod);
+    $target.setAttribute('data-scroll-lock-current-fill-gap-method', method);
 
-    if (state.fillGapMethod === 'margin') {
+    if (method === 'margin') {
       var currentMargin = parseFloat(computedStyle.marginRight);
       $target.style.marginRight = "".concat(currentMargin + scrollBarWidth, "px");
-    } else if (state.fillGapMethod === 'width') {
+    } else if (method === 'width') {
       $target.style.width = "calc(100% - ".concat(scrollBarWidth, "px)");
-    } else if (state.fillGapMethod === 'max-width') {
+    } else if (method === 'max-width') {
       $target.style.maxWidth = "calc(100% - ".concat(scrollBarWidth, "px)");
-    } else if (state.fillGapMethod === 'padding') {
+    } else if (method === 'padding') {
       var currentPadding = parseFloat(computedStyle.paddingRight);
       $target.style.paddingRight = "".concat(currentPadding + scrollBarWidth, "px");
     }

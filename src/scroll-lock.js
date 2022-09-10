@@ -325,18 +325,29 @@ const fillGapTarget = ($target, isLockable = false) => {
             unfillGapTarget($target);
         }
 
+        const method = (
+            $target.getAttribute('data-scroll-lock-fill-gap-method')
+            || state.fillGapMethod
+        );
+
+        if (FILL_GAP_AVAILABLE_METHODS.indexOf(method) < 0) {
+            const methods = FILL_GAP_AVAILABLE_METHODS.join(', ');
+            throwError(`"${method}" method is not available!\nAvailable fill gap methods: ${methods}.`);
+            return;
+        }
+
         const computedStyle = window.getComputedStyle($target);
         $target.setAttribute('data-scroll-lock-filled-gap', 'true');
-        $target.setAttribute('data-scroll-lock-current-fill-gap-method', state.fillGapMethod);
+        $target.setAttribute('data-scroll-lock-current-fill-gap-method', method);
 
-        if (state.fillGapMethod === 'margin') {
+        if (method === 'margin') {
             const currentMargin = parseFloat(computedStyle.marginRight);
             $target.style.marginRight = `${currentMargin + scrollBarWidth}px`;
-        } else if (state.fillGapMethod === 'width') {
+        } else if (method === 'width') {
             $target.style.width = `calc(100% - ${scrollBarWidth}px)`;
-        } else if (state.fillGapMethod === 'max-width') {
+        } else if (method === 'max-width') {
             $target.style.maxWidth = `calc(100% - ${scrollBarWidth}px)`;
-        } else if (state.fillGapMethod === 'padding') {
+        } else if (method === 'padding') {
             const currentPadding = parseFloat(computedStyle.paddingRight);
             $target.style.paddingRight = `${currentPadding + scrollBarWidth}px`;
         }
